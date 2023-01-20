@@ -94,7 +94,7 @@ Per le recensioni da parte dell'host bisogna rappresentare una recensione testua
 Per i commenti bisogna rapprensentare la data in cui è stato effettuato il commento, il testo riportante e l'autore.
 
 ## 1.4 Schema E-R
-[embed]https://github.com/miriam-16/DB-project-b.b/blob/main/Immagini/NewDB-Copy%20of%20Page-5.pdf[embed]
+[embed][https://github.com/miriam-16/DB-project-b.b/blob/main/Immagini/NewDB-Copy%20of%20Page-5.pdf]
 
 ## 1.4 Business Rules
 ### Dizionario dei dati (Entità)
