@@ -96,7 +96,6 @@ Per i commenti bisogna rapprensentare la data in cui è stato effettuato il comm
 ## 1.4 Business Rules
 ### Dizionario dei dati (Entità)
 ![alt text](https://github.com/miriam-16/DB-project-b.b/blob/main/Immagini/Pasted%20image%2020220617202038.png)
-<br>
 ![alt text](https://github.com/miriam-16/DB-project-b.b/blob/main/Immagini/Pasted%20image%2020220617202053.png)
 
 
