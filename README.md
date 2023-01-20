@@ -179,7 +179,7 @@ Nello schema E-R vi sono delle ridondanze:
 
 #### Analisi di una ridondanza
 ##### Schema di navigazione
-![[Pasted image 20220617004235.png|550]]
+![alt text](https://github.com/miriam-16/DB-project-b.b/blob/main/Immagini/Pasted%20image%2020220617004235.png)
 
 Concetto|Tipo|Volume
 ----|:-----:|:----
@@ -191,7 +191,7 @@ Luogo|R|$24\,000\,000$
 ##### Tavola degli accessi 
 Operazione: Controllo prezzo totale della prenotazione($140\,000$/giorno).
 ###### Presenza di ridondanza
-![[Pasted image 20220617004631.png|550]]
+![alt text](https://github.com/miriam-16/DB-project-b.b/blob/main/Immagini/Pasted%20image%2020220617004631.png)
 
 Concetto|Costrutto|Accessi|Tipo
 ----|----|---|---
@@ -199,7 +199,7 @@ Prenotazione|E|1|L
 
 
 ###### Assenza di ridondanza
-![[Pasted image 20220617004511.png|550]]
+![alt text](https://github.com/miriam-16/DB-project-b.b/blob/main/Immagini/Pasted%20image%2020220617004511.png)
 
 Concetto|Costrutto|Accessi|Tipo
 ----|------|-----|-----
