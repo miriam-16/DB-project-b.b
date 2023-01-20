@@ -100,7 +100,7 @@ Per i commenti bisogna rapprensentare la data in cui è stato effettuato il comm
 
 
 ### Dizionario dati (Relazioni)
-![[Pasted image 20220609171920.png|550]]
+![alt text](https://github.com/miriam-16/DB-project-b.b/blob/main/Immagini/Pasted%20image%2020220609171920.png)
 
 
 ## Vincoli di integrità
