@@ -95,7 +95,7 @@ Per i commenti bisogna rapprensentare la data in cui è stato effettuato il comm
 
 ## 1.4 Business Rules
 ### Dizionario dei dati (Entità)
-![alt text][[Pasted image 20220617202038.png|550]]
+![alt text][DB-project-b.b/Immagini/Pasted image 20220617202038.png|550]]
 <br>
 ![[Pasted image 20220617202053.png|550]]  
 
