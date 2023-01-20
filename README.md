@@ -93,6 +93,153 @@ Per le recensioni da parte dell'host bisogna rappresentare una recensione testua
 ### Frasi relative a commento
 Per i commenti bisogna rapprensentare la data in cui è stato effettuato il commento, il testo riportante e l'autore.
 
+## 1.4 Business Rules
+### Dizionario dei dati (Entità)
+![[Pasted image 20220617202038.png|550]]
+<br>
+![[Pasted image 20220617202053.png|550]]  
+
+
+### Dizionario dati (Relazioni)
+![[Pasted image 20220609171920.png|550]]
+
+
+## Vincoli di integrità
+- La somma del numero di ospiti per prenotazione di un alloggio non può superare il numero di ospiti consentito per alloggio per una stessa data;
+- _data_arrivo_(prenotazione) deve essere minore di _data_partenza_(prenotazione); 
+- _data_recensione_ è deve essere maggiore rispetto a  _data_partenza_(prenotazione);
+- _data_commento_(commento) deve essere maggiore di _data_recensione_(recensione);
+- _data_addebbito_, _data_rifiuto_ e _data_cancellazione_ non possono essere superiori a _data_arrivo_(prenotazione);
+- la recensione verso l'host e verso l'alloggio può essere scritta solo dall'ultente che ha effettuato la prenotazione;
+- in _recensione_verso_alloggio_, i voti per valutare l'alloggio vanno da 1 a 5;
+- il thread di commenti riguarda esclusivamente l'ospite e l'host per un determinato soggiorno;
+- l'utente può scrivere una recensione entro 14 giorni da _data_partenza_(prenotazione).
+
+### Vincoli di derivazione
+- _rating_medio_(alloggio) è la media aritmetica dei voti ricevuti dagli ospiti tramite le recensioni;
+- _costo_totale_(prenotazione) si ottiene da (_prezzo_notte_+ _prezzo_pulizia_)$\times$ _numero_ospiti_prenotazione_;
+- _numero_recensioni_(alloggio) si ottiene dalle occorrenze dell'associazione voto con recensioni;
+- _n_recensioni_ricevute_(utente) si ottiene dalle occorrenze di valutazione.
+
+# 2 Progettazione logica
+## 2.1 Tavola dei volumi
+Nome|Tipo|Volume|Descrizione
+:---:|:---:|:---:|:---:
+Utente|E|$2\,000\,000$|Supponiamo che ci saranno 2 milioni 
+Host|E|$500\,000$|Supponiamo che sui 2 milioni di utenti solo 500 mila saranno host e gli altri ospiti
+Superhost|E|$50\,000$|Su 500 mila host, abbiamo pensato che 50 mila saranno superhost
+Alloggio|E|$1\,000\,000$|Ogni host, compresi i superhost, ha almeno 2 alloggi 
+Appartamento|E|$600\,000$|Gli appartamenti sono il 60% degli alloggi
+Stanza privata|E|$300\,000$|Le stanze private sono il 30% degli alloggi
+Stanza condivisa|E|$100\,000$|Le stanze condivise sono il 10% degli alloggi
+Prenotazione|E|$24\,000\,000$|Abbiamo supposto che ogni utente fa almeno 2 prenotazioni al mese
+Prenotazione Rifiutata|E|$480\,000$|Su 24 milioni di prenotazioni, il 5% vengono rifiutate
+Prenotazione Accettata|E|$23\,520\,000$|Il 95% delle prenotazioni vengono accettate
+Prenotazione Cancellata|E|$470\,400$|Il 5% delle prenotazioni accettate vengono cancellate
+Recensione|E|$67\,032\,000$|Ogni prenotazione accettata ha 3 recensione, ma supponiamo che almeno il 5% degli utenti non lascerà una recensione
+Recensione_verso_host|E|$23\,461\,200$|Tutti gli utenti lasciano una prenotazione sull'host
+Recensione_verso_utente|E|$20\,109\,600$|Il 95% degli host lascia una recensione all'utente
+Recensione_verso_alloggio|E|$23\,461\,200$|Tutti gli utenti lasciano una prenotazione sull'alloggio
+Commento|E|$40\,386\,780$|Supponiamo che il 90% degli utenti risponda alla recensione dell'host e che il 95% degli host risponda alla recensione degli utenti
+Proprietario|R|$1\,000\,000$|É il massimo tra il volume di host e il volume di alloggio
+Preferiti|R|$6\,000\,000$|É il massimo tra il volume di alloggio e il volume di utente
+Ordine|R|$24\,000\,000$|É il massimo tra il volume di utente e il volume di prenotazione
+Partecipazione|R|$36\,000\,000$|É il massimo tra il volume di utente e il volume di prenotazione, quando un utente partecipa ad una prenotazione 
+Luogo|R|$24\,000\,000$|É il massimo tra il volume di alloggio e il volume di prenotazione
+Voto|R|$23\,461\,200$|É il massimo tra il volume di prenotazione e il volume di alloggio
+Valutazione|R|$67\,032\,000$|É il massimo tra il volume di utente e il volume di recensione
+Thread|R|$40\,386\,780$|É il massimo tra il volume di recensione e il volume di commento
+Risposta|R|$40\,386\,780$|É il massimo tra il volume di utente e il volume di commenti, quando l'utente commenta la recensione dell'altro
+
+## 2.2 Tavola delle operazioni
+
+Operazione|Tipo|Frequenza| Motivo
+:----|:----:|:-----:|:----
+1: Osservare un alloggio|I|$7\,200\,000$/giorno|Supponiamo che il 60% degli utenti sia attivo e controlli in media 6 alloggi al giorno
+2: Controllo prezzo totale della prenotazione|I|$140\,000$/giorno|Calcolo derivato dalla visualizzazione al giorno di $24\,000\,000$ prenotazione (considerando ripetizioni)
+3: Visualizzare rencensioni di un alloggio|I|$12\,500$/giorno|Calcolo raggiunto facendo una stima sulle prenotazioni al giorno e sui commenti  
+4: Registrazione di un nuovo utente|I|397/giorno|Mediante calcoli temporali basati sull'esampio di airb&b, abbiamo ottenuto il seguente risultato
+5: Aggiunta di un nuovo alloggio|I|198/giorno|Partendo dal numero di alloggi stimati, abbiamo ricavato gli alloggi che vengono aggiunti al database su base giornaliera
+6: Rendere visibili le recensioni|I|3/giorno|Si suppone che la maggior parte delle recensioni vengano caricate sulla piattaforma in tre fasce orarie maggiori
+7: Controllare condizioni per la qualifica di superhost ed eventuale aggiornamento|I|1/giorno|Da testo
+8: Calcola tasso cancellazione di ciascun host|B| 1/settimana|Da testo
+9: Aggiornare il rating medio dell'alloggio|B|1/settimana|Ritenuta un'operazione rilevante
+10: Calcolo classifica degli alloggi con<br/> valutazione più alta|B|1/mese|Da testo
+
+## 2.3 Ristrutturazione dello schema E-R
+### 2.3.1 Analisi delle ridondanze
+Nello schema E-R vi sono delle ridondanze:
+- attributi derivabili da altre entità
+	- _costo_totale_(prenotazione) si può ottenere da $(prezzo\_notte + prezzo\_pulizia) \times numero\_ospiti$(alloggio)
+	- _rating_medio_(alloggio) si può ottenere dalla media $\frac{voto\_qp + voto\_pulizia + voto\_comunicazione + voto\_posizione}{numero\_recensioni\_verso\_alloggio}$(recensione_alloggio)
+- attributi derivabili da un conteggio
+	- _n_rec_ricevute_(utente) è deducibile dal conteggio delle occorrenze di _recensione_verso_ospite_ (+ _recensione_verso_host_ se l'utente è anche host);
+	- _numero_recensioni_(alloggio) è deducibile dalle occorrenze di _recensione_verso_alloggio_
+- ridondanza dovuta a cicli
+		-  l'entità _utente_ è collegata a recensione e a commento, e queste ultime tra di loro sono collegate
+
+#### Analisi di una ridondanza
+##### Schema di navigazione
+![[Pasted image 20220617004235.png|550]]
+
+Concetto|Tipo|Volume
+----|:-----:|:----
+Prenotazione|E|$24\,000\,000$
+Alloggio|E|$1\,000\,000$
+Luogo|R|$24\,000\,000$
+
+
+##### Tavola degli accessi 
+Operazione: Controllo prezzo totale della prenotazione($140\,000$/giorno).
+###### Presenza di ridondanza
+![[Pasted image 20220617004631.png|550]]
+
+Concetto|Costrutto|Accessi|Tipo
+----|----|---|---
+Prenotazione|E|1|L
+
+
+###### Assenza di ridondanza
+![[Pasted image 20220617004511.png|550]]
+
+Concetto|Costrutto|Accessi|Tipo
+----|------|-----|-----
+Prenotazione|E|1|L
+Alloggio|E|1|L
+Luogo|R|1|L
+
+Operazione con ridondanza:
+- accessi in lettura $140\,000$
+
+Operazione senza ridondanza:
+- accessi in lettura $420\,000$
+
+#### Costo aggiuntivo in termini di spazio (con ridondanza)
+- Ipotizziamo che costo_totale venga memorizzato in 4 byte.
+- Spazio totale necessario : 4 * $140\,000$ = $560\,000$ byte( circa 560KB)
+
+Con ridondanza|Senza ridondanza
+-------|-------
+$140\,000$|$420\,000$
+560 KByte di spazio aggiuntivi|0 Mbyte di spazio aggiuntivi
+
+Dati i risultati ottenuti, è evidente che conviene mantenere la ridondanza, se si considera tale operazione che riguarda solo la lettura, in caso di scrittura è meglio rimuovere l'attributo. 
+
+### 2.3.2 Eliminazione delle generalizzazioni
+Nel nostro schema E-R sono presenti sei generalizzazioni.
+- Le generalizzazioni _host_ e _superhost_ sono state accorpate all'entità padre _utente_, così da ridurre il numero di accessi e poter distinguere ogni categoria inserendo l'attributo _tipo_;
+- Le generalizzazioni di _alloggio_ sono state accorpate all'entità padre in quanto gli accessi ad alloggio e ai suoi tipi sono contestuali. Anche qui, l'aggiunta dell'attributo _tipo_ consente di distinguere i diversi modelli di alloggio;
+- La generalizzazione di _prenotazione_ è stata accorta al padre, mentre la generalizzazione di _accettata_ è diventata una relazione, per distinguere i vari stati che la prenotazione può avere e distinguere i casi in cui la prenotazione è cancellata dall'host o dall'ospite;
+- la generalizzazione di _recensioni_ è stata accorpata al padre per ridurre gli accessi, al costo di aumentare il numero di attributi nulli. Questa implementazione ci garantisce di distiguere i vari tipi di prenotazione mediante l'aggiunta dell'attributo _tipo_recensione_ e l'attributo giudizio che cambia in base al tipo selezionato. 
+
+### 2.3.4 Analisi delle ridondanze
+Viene introdotto l'attributo _codice_prenotazione_ in prenotazione, per poter sostuire la chiave composta dapprima selezionata, in quanto non semplice, nonostante identifichi un'entità al quanto importante se non essenziale all'interno del database. 
+Introdotto inoltre _codice_alloggio_, per rimuovere l'utilizzo dell'indirizzo come identificazione dell'alloggio, in quanto attributo non immediato. 
+Utile inserire le chiavi _id_recensione_ in recensione e _id_commento_ in commento per non usare chiavi composte non immediate. 
+
+
+
+
 
 
 
